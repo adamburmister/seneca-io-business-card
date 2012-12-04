@@ -1,0 +1,39 @@
+<html>
+<body>
+
+<div id="maze" />
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="js/hexcell.js"></script>
+<script>
+const width = 800;
+const height = 600;
+const radius = 30;
+
+$(function() {
+  var paper = new Raphael("maze", width, height);
+
+
+  function buildHexagons(radius, width, height) {
+    for(var y = 0; y < width; y++) {
+      for(var x = 0; x < height; x++) {
+        var hex = new HexCell(radius, x, y);
+        paper.path( hex.toString() );
+      }
+    }
+  }
+
+  function draw() {
+    var w = Math.floor(width / (radius*2));
+    var h = Math.floor(height / (radius*2));
+    console.log(w, h);
+    buildHexagons(radius, w, h);
+  }
+
+  draw();
+})
+
+</script>
+</body>
+</html>
