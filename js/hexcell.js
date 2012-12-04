@@ -8,8 +8,8 @@ var HexCell = function(radius, x, y) {
   this.gridX = x;
   this.gridY = y;
 
-  this.top   = y * this.height / 2;
-  this.left  = x * this.width;
+  this.top   = Math.floor(y * this.height / 2);
+  this.left  = Math.floor(x * this.width);
   if(y % 2 == 0) {
     this.left += this.side;
   }
@@ -30,9 +30,9 @@ HexCell.prototype.calcPoints = function() {
   var dx = [ halfRadius, this.side, this.width, this.side, halfRadius, 0 ];
   var dy = [ 0, 0, halfHeight, this.height, this.height, halfHeight ];
 
-  var offset = this.side * this.gridX;
+  // var offset = this.side * this.gridX;
 
-  var topLength = this.radius * Math.sin(60 * Math.PI / 180);
+  var topLength = (this.width - this.side) * 2;
   var offset = topLength * this.gridX;
 
   for(var i=0; i<6; i++) {

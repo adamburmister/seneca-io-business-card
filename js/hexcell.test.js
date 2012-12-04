@@ -11,14 +11,14 @@
 
 describe("A HexCell", function() {
   var north, northEast, southEast, south, southWest, northWest;
-  var radius = 10;
+  var radius = 5;
 
   beforeEach(function() {
-    hex       = new HexCell(radius, 1, 1);
+    hex = new HexCell(radius, 1, 1);
   });
 
   it("has a side length", function() {
-    expect(hex.side).toBe( Math.floor(radius * 3/2) );
+    expect(hex.side).toBe(7);
   });
 
   it("has a height", function() {
@@ -40,12 +40,15 @@ describe("A HexCell", function() {
       expect(hex.points.length).toBe(6);
     });
     it("should be correctly calculated for a radius of " + radius, function(){
-      var expected = [ [ 35, 17 ], [ 45, 17 ], [ 50, 25 ], [ 45, 34 ], [ 35, 34 ], [ 30, 25 ] ];
+      var expected = [ [ 18, 4 ], [ 23, 4 ], [ 26, 8 ], [ 23, 12 ], [ 18, 12 ], [ 16, 8 ] ];
       // expect(hex.points).toBe([]);
       for(var i=0; i<6; i++) {
         expect(hex.points[i][0]).toBe(expected[i][0]);
         expect(hex.points[i][1]).toBe(expected[i][1]);
       }
+    });
+    it("should offset correctly", function() {
+
     });
   });
 

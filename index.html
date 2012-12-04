@@ -13,13 +13,18 @@ const radius = 30;
 
 $(function() {
   var paper = new Raphael("maze", width, height);
-
+  var cells = [];
 
   function buildHexagons(radius, width, height) {
+    var hex;
     for(var y = 0; y < width; y++) {
       for(var x = 0; x < height; x++) {
-        var hex = new HexCell(radius, x, y);
+        hex = new HexCell(radius, x, y);
         paper.path( hex.toString() );
+        cells.push(hex);
+        if(x == 0) {
+          console.log(hex.points[5]);
+        }
       }
     }
   }
