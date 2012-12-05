@@ -15,12 +15,15 @@ var HexCell = function(radius, x, y) {
   }
 
   this.points = [];
-  this.sides  = [true, true, true, true, true, true];
+  this.sides  = [HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED];
   this.neighbours = {};
 
   this.calcNeighbours();
   this.calcPoints();
 };
+
+HexCell.OPEN = false;
+HexCell.CLOSED = true;
 
 // Hexagon math
 HexCell.prototype.calcPoints = function() {
@@ -29,8 +32,6 @@ HexCell.prototype.calcPoints = function() {
 
   var dx = [ halfRadius, this.side, this.width, this.side, halfRadius, 0 ];
   var dy = [ 0, 0, halfHeight, this.height, this.height, halfHeight ];
-
-  // var offset = this.side * this.gridX;
 
   var topLength = (this.width - this.side) * 2;
   var offset = topLength * this.gridX;
@@ -49,6 +50,15 @@ HexCell.prototype.calcNeighbours = function() {
   this.neighbours.southWest = [this.gridX,     this.gridY + 1];
   this.neighbours.northWest = [this.gridX - 1, this.gridY];
 }
+
+// @return boolean Are there any open sides in this cell?
+HexCell.prototype.isClosed = function() {
+  var closed = true;
+  for(var i=0; i<this.sides.length; i++) {
+    closed &= this.sides[i];
+  }
+  return !!closed;
+};
 
 /**
  Set the side edge state for the hexagon cell to be open or closed
@@ -76,12 +86,19 @@ HexCell.prototype.setSide = function(i, state) {
 
 HexCell.prototype.toString = function() {
   var path = "";
-  var x, y;
-  for (var i = 0; i < 6; i++) {
+  var x, y, a;
+  for (var i = 0; i < this.points.length; i++) {
     x = this.points[i][0];
     y = this.points[i][1];
-    path += (i == 0 ? "M" : "L") + x + "," + y
+    if(i == 0 || (this.sides[i] == HexCell.OPEN)) {
+      a = "M";
+    } else {
+      a = "L";
+    }
+
+    path += a + x + "," + y
   }
-  path += "Z"
+  path += "L" + this.points[0][0] + "," + this.points[0][1]
+  // path += "Z"
   return path;
 }

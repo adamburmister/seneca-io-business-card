@@ -1,15 +1,4 @@
-// it has neighbour accessors
-//   they return the correct neighbour hexcell
-
-// it has points that render correctly for a given radius
-//   there are six of them
-//   they are offset if the y is an odd number
-
-// it has sides which represent state of open or closed
-//   there are six of them
-//   they are open or closed
-
-describe("A HexCell", function() {
+describe("HexCell", function() {
   var north, northEast, southEast, south, southWest, northWest;
   var radius = 5;
 
@@ -48,7 +37,7 @@ describe("A HexCell", function() {
       }
     });
     it("should offset correctly", function() {
-
+      // TODO
     });
   });
 
@@ -62,6 +51,13 @@ describe("A HexCell", function() {
     it("is an array of 6 elements", function() {
       expect(hex.sides.length).toBe(6);
     });
+    it("is closed if no sides are open", function() {
+      expect(hex.isClosed()).toBe(true);
+    });
+    it("is !closed if a side is open", function() {
+      hex.setSide(0, HexCell.OPEN);
+      expect(hex.isClosed()).toBe(false);
+    });
 
     describe("can be set", function() {
       it("to open", function() {
@@ -69,7 +65,8 @@ describe("A HexCell", function() {
         expect(hex.sides[0]).toBe(false);
       });
       it("to closed", function() {
-
+        hex.setSide(0, true);
+        expect(hex.sides[0]).toBe(true);
       });
     });
   });
