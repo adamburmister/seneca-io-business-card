@@ -43,13 +43,22 @@ HexCell.prototype.calcPoints = function() {
 
 // Calculate the grid neighbours
 HexCell.prototype.calcNeighbours = function() {
-  // THIS IS BAD
-  this.neighbours.north     = [this.gridX - 1, this.gridY - 1];
-  this.neighbours.northEast = [this.gridX,     this.gridY - 1];
-  this.neighbours.southEast = [this.gridX + 1, this.gridY];
-  this.neighbours.south     = [this.gridX + 1, this.gridY + 1];
-  this.neighbours.southWest = [this.gridX,     this.gridY + 1];
-  this.neighbours.northWest = [this.gridX - 1, this.gridY];
+  var even = (this.gridY % 2 == 0);
+
+  this.neighbours.north = [this.gridX, this.gridY - 2];
+  this.neighbours.south = [this.gridX, this.gridY + 2];
+
+  if(even) {
+    this.neighbours.northEast = [this.gridX + 1, this.gridY - 1];
+    this.neighbours.southEast = [this.gridX + 1, this.gridY + 1];
+    this.neighbours.southWest = [this.gridX,     this.gridY + 1];
+    this.neighbours.northWest = [this.gridX,     this.gridY - 1];
+  } else {
+    this.neighbours.northEast = [this.gridX,     this.gridY - 1];
+    this.neighbours.southEast = [this.gridX,     this.gridY + 1];
+    this.neighbours.southWest = [this.gridX - 1, this.gridY + 1];
+    this.neighbours.northWest = [this.gridX - 1, this.gridY - 1];
+  }
 }
 
 // @return boolean Are there any open sides in this cell?

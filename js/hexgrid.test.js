@@ -97,6 +97,19 @@ describe("HexCell Grid", function() {
       expect(Object.keys(neighbours)).toContain('north','northWest','southWest');
     });
 
+    //---
+
+    it("has correct coordinates for accessible neighbours", function() {
+      var cell = grid.getCell(0,2);
+      var neighbours = grid.getAccessibleNeighbours(cell);
+      expect(neighbours.north).toEqual([0,0]);
+      expect(neighbours.northEast).toEqual([1,1]);
+      expect(neighbours.southEast).toEqual([1,3]);
+      expect(neighbours.south).toEqual([0,4]);
+      expect(neighbours.southWest).toEqual([0,3]);
+      expect(neighbours.northWest).toEqual([0,1]);
+    });
+
   });
 
 })

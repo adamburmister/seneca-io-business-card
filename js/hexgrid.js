@@ -92,7 +92,7 @@ HexGrid.prototype.render = function(paper) {
 HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   var neighbours = {};
   var cardinals = Object.keys(cell.neighbours);
-  var isOdd = (cell.gridY % 2 != 0);
+  var even = (cell.gridY % 2 == 0);
 
   function notAccessible() {
     var removed = [];
@@ -125,13 +125,13 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
 
   // If first column
   if(cell.gridX == 0) {
-    if(isOdd) {
+    if(!even) {
       notAccessible('northWest','southWest'); 
     }
   }
   // Last column
   if(cell.gridX == this.width - 1) {
-    if(!isOdd) {
+    if(even) {
       notAccessible('northEast'); 
       if(cell.gridY <= this.height - 2) {
         notAccessible('southEast'); 
@@ -167,8 +167,8 @@ HexGrid.prototype.generateMaze = function() {
       // When done, the list contain up to six possible directions to move.
       var that = this;
       $.each(neighbours, function(cardinal, gridCoords) {
-        // var neighbour = that.getCell(gridCoords[1], gridCoords[0]);
-        // console.log(cell.gridX, cell.gridY, cardinal, gridCoords, neighbour);
+        var neighbour = that.getCell(gridCoords[1], gridCoords[0]);
+        console.log(cell.gridX, cell.gridY, cardinal, gridCoords, neighbour);
         // if(!neighbour) {
         //   console.log("Neighbour not found", gridCoords[1], gridCoords[0])
         //   return;

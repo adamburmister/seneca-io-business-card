@@ -73,12 +73,12 @@ describe("HexCell", function() {
 
   describe("neighbours", function() {
     beforeEach(function() {
-      hex       = new HexCell(radius, 1, 1);
+      hex       = new HexCell(radius, 0, 2);
       north     = new HexCell(radius, 0, 0);
-      northEast = new HexCell(radius, 1, 0);
-      southEast = new HexCell(radius, 2, 1);
-      south     = new HexCell(radius, 2, 2);
-      southWest = new HexCell(radius, 1, 2);
+      northEast = new HexCell(radius, 1, 1);
+      southEast = new HexCell(radius, 1, 3);
+      south     = new HexCell(radius, 0, 4);
+      southWest = new HexCell(radius, 0, 3);
       northWest = new HexCell(radius, 0, 1);
     });
 
