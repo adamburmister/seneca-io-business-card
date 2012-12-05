@@ -1,5 +1,6 @@
 /* Construct a hexagon cell of a given radius at grid x, y coordinates */
 var HexGrid = function(radius, w, h) {
+  this.radius = radius;
   this.width = w;
   this.height = h;
 
@@ -37,7 +38,11 @@ HexGrid.prototype.render = function(paper) {
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
-      paper.path(cell.toString());
+      paper.path(cell.toString()).attr({ 
+        "stroke": "#fff", 
+        "stroke-width": "4px",
+        "stroke-linecap": "round",
+      });
     }
   }
   return paper;
