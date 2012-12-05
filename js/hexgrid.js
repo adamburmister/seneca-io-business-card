@@ -15,12 +15,32 @@ var HexGrid = function(radius, w, h) {
 
   // Now open doors within the hexagon cells to make a maze
   this.generateMaze();
+
+  // // var d = this.getCell(2,5);
+  // // console.log( this.getAccessibleNeighbours(d) );
+  // this.openCell(0,2, HexCell.CARDINALS.north);
+  // this.openCell(0,2, HexCell.CARDINALS.northWest);
+  // this.openCell(0,2, HexCell.CARDINALS.northEast);
+  // this.openCell(0,2, HexCell.CARDINALS.south);
+  // this.openCell(0,2, HexCell.CARDINALS.southWest);
+  // this.openCell(0,2, HexCell.CARDINALS.southEast);
 }
 
 // Simplify X/Y accessors for cells
 HexGrid.prototype.getCell = function(x, y) {
+  if(x < 0 || y < 0 || x >= this.width || y >= this.height) {
+    return null;
+  }
   return this.grid[y][x];
 };
+
+HexGrid.prototype.openCell = function(x, y, cardinal) {
+  var target = this.getCell(x,y);
+  var sideNeighbour = target.setSide(cardinal, HexCell.OPEN);
+  var openedTo = this.getCell(sideNeighbour.gridCoords[0], sideNeighbour.gridCoords[1]);
+  var correspondingSide = ((cardinal + 3) % 6);
+  openedTo.setSide( correspondingSide, HexCell.OPEN);
+}
 
 // Render the grid to a Raphael paper
 HexGrid.prototype.render = function(paper) {
@@ -149,56 +169,44 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   return neighbours;
 };
 
-
 HexGrid.prototype.generateMaze = function() {
   // http://www.experts-exchange.com/Programming/Languages/Scripting/JavaScript/A_7849-Hex-Maze.html
 
   var cell,
-      nextCell,
-      neighbours = [],
-      closedNeighbours = [];
+      next,
+      closedNeighbours;
 
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
-      neighbours = this.getAccessibleNeighbours(cell);
 
       // 2) Check the neighboring cells:  Make a list of neighbors that have never been visited (i.e., have no doors).
       // When done, the list contain up to six possible directions to move.
       var that = this;
-      $.each(neighbours, function(cardinal, gridCoords) {
-        var neighbour = that.getCell(gridCoords[1], gridCoords[0]);
-        console.log(cell.gridX, cell.gridY, cardinal, gridCoords, neighbour);
-        // if(!neighbour) {
-        //   console.log("Neighbour not found", gridCoords[1], gridCoords[0])
-        //   return;
-        // }
-        // if(neighbour.isClosed()) {
-        //   closedNeighbours.push(neighbour);
-        // }
+      var neighbour;
+      closedNeighbours = []
+
+      $.each(this.getAccessibleNeighbours(cell), function(cardinal, gridCoords) {
+        neighbour = that.getCell( gridCoords[0] , gridCoords[1] );
+
+        if(neighbour && neighbour.isClosed()) {
+          closedNeighbours.push({ cardinal: cardinal, cell: neighbour });
+        }
       });
 
       if(closedNeighbours.length == 0) {
         // 3) If the list is empty (you are stuck), scan to locate any cell that has been visited that is next to a cell
         // that has not.  Set that as the current cell and go to 2.
         console.log("Dead end", cell);
+        continue;
       }
 
-      // 4) Choose randomly from that list of available directions.
-      nextCell = closedNeighbours[ Math.round(Math.random() * closedNeighbours) ];
+      // // 4) Choose randomly from that list of available directions.
+      next = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
+      this.openCell(x, y, HexCell.CARDINALS[next.cardinal]);
 
-      // 5) Set the corresponding door for the current cell.
+      // // 7) If all cells have at least one door, we're done.  Otherwise go to 2.
 
-      // 6) Move into the new cell (update X,Y) and set the corresponding door for the new cell.
-      // 7) If all cells have at least one door, we're done.  Otherwise go to 2.
-
-
-      // for(var i = 0; i < cell.sides.length; i++) {
-      //   if((x <= 1) || (y <= 0)) {
-      //     continue;
-      //   }
-      //   cell.sides[i] = Math.round(Math.random());
-      // }
     }
   }
 };

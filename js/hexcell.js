@@ -24,6 +24,14 @@ var HexCell = function(radius, x, y) {
 
 HexCell.OPEN = false;
 HexCell.CLOSED = true;
+HexCell.CARDINALS = {
+  northWest: 0,
+  north: 1,
+  northEast: 2,
+  southEast: 3,
+  south: 4,
+  southWest: 5
+}
 
 // Hexagon math
 HexCell.prototype.calcPoints = function() {
@@ -89,7 +97,7 @@ HexCell.prototype.setSide = function(i, state) {
   };
 
   return {
-    gridCoord: correspondingNeighbour[i],
+    gridCoords: correspondingNeighbour[i],
     state: state
   };
 }
@@ -100,15 +108,16 @@ HexCell.prototype.toString = function() {
   for (var i = 0; i < this.points.length; i++) {
     x = this.points[i][0];
     y = this.points[i][1];
-    if(i == 0 || (this.sides[i] == HexCell.OPEN)) {
+    if(i === 0 || (this.sides[i] === HexCell.OPEN)) {
       a = "M";
     } else {
       a = "L";
     }
-
     path += a + x + "," + y
   }
-  path += "L" + this.points[0][0] + "," + this.points[0][1]
-  // path += "Z"
+  // And complete the shape to the start point of closed
+  if(this.sides[0] === HexCell.CLOSED) {
+    path += "L" + this.points[0][0] + "," + this.points[0][1]
+  }
   return path;
 }
