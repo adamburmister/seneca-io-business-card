@@ -4,24 +4,21 @@ var HexCell = function(radius, x, y) {
   this.width = Math.floor(radius * 2);
   this.height = Math.floor(radius * Math.sqrt(3));
   this.side = Math.floor(radius * 3 / 2);  // Length of a side
-
   this.gridX = x;
   this.gridY = y;
-
   this.top   = Math.floor(y * this.height / 2);
   this.left  = Math.floor(x * this.width);
-  if(y % 2 == 0) {
-    this.left += this.side;
-  }
+  if(y % 2 == 0) { this.left += this.side; } // odd cells are pushed in to make the honeycomb
 
-  this.points = [];
   this.sides  = [HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED];
+  this.points = [];
   this.neighbours = {};
 
   this.calcNeighbours();
   this.calcPoints();
 };
 
+// Constants
 HexCell.OPEN = false;
 HexCell.CLOSED = true;
 HexCell.CARDINALS = {

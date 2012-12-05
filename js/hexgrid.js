@@ -1,5 +1,6 @@
 /* Construct a hexagon cell of a given radius at grid x, y coordinates */
 var HexGrid = function(radius, w, h) {
+  this.renderAccessibleNeighbourCardinals = false
   this.width = w;
   this.height = h;
 
@@ -46,15 +47,13 @@ HexGrid.prototype.openCell = function(x, y, cardinal) {
 HexGrid.prototype.render = function(paper) {
   var cell;
 
-  var renderAccessibleNeighbourCardinals = true;
-
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
       paper.path(cell.toString());
 
       // DEBUG
-      if(renderAccessibleNeighbourCardinals) {
+      if(this.renderAccessibleNeighbourCardinals) {
         var r = 2;
         var cardToPointIndex = {
           north:     0,
@@ -169,44 +168,62 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   return neighbours;
 };
 
-HexGrid.prototype.generateMaze = function() {
-  // http://www.experts-exchange.com/Programming/Languages/Scripting/JavaScript/A_7849-Hex-Maze.html
+HexGrid.prototype.generateMaze = function(cell, i) {
+  // This is a recursive function. If no cell is passed its interation-0
+  // Pick the top left most cell to begin walking the maze
+  if(cell === undefined) {
+    cell = this.getCell(0,0);
+    i = 0;
+  }
 
-  var cell,
-      next,
-      closedNeighbours;
+  var that = this,
+      next = null,
+      closedNeighbours = [],
+      accessibleNeighbours = [];
 
-  for(var y = 0; y < this.height; y++) {
-    for(var x = 0; x < this.width; x++) {
-      cell = this.getCell(x,y);
+  // Find any neighbours who have no open sides
+  accessibleNeighbours = this.getAccessibleNeighbours(cell);
 
-      // 2) Check the neighboring cells:  Make a list of neighbors that have never been visited (i.e., have no doors).
-      // When done, the list contain up to six possible directions to move.
-      var that = this;
-      var neighbour;
-      closedNeighbours = []
+  $.each(accessibleNeighbours, function(cardinal, gridCoords) {
+    var neighbour = that.getCell( gridCoords[0] , gridCoords[1] );
+    if(neighbour && neighbour.isClosed()) {
+      closedNeighbours.push({ cardinal: cardinal, cell: neighbour });
+    }
+  });
 
-      $.each(this.getAccessibleNeighbours(cell), function(cardinal, gridCoords) {
-        neighbour = that.getCell( gridCoords[0] , gridCoords[1] );
+  // If the list is empty (you are stuck), scan to locate any cell that has 
+  // been visited that is next to a cell that has not and recurse with it.
+  if(closedNeighbours.length > 0) {
+    // Choose randomly from that list of available directions.
+    next = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
+    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[next.cardinal]);
+    this.generateMaze(next.cell, i+1);
+  } else {
+    // If all cells have at least one door, we're done. Otherwise recurse.
+    var t = null;
+    
+    // Randomly open an edge
+    var keys = Object.keys(accessibleNeighbours);
+    var k = keys[ Math.round( Math.random() * (keys.length - 1)) ];
+    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[k] );
 
-        if(neighbour && neighbour.isClosed()) {
-          closedNeighbours.push({ cardinal: cardinal, cell: neighbour });
+    closed_cell_search:
+    for(var y=0; y < this.height; y++) {
+      for(var x=0; x < this.width; x++) {
+        t = this.getCell(x, y);
+        if(t.seen) continue;
+        t.seen = true;
+        if(t.isClosed()) {
+          next = t;
+          break closed_cell_search;
         }
-      });
-
-      if(closedNeighbours.length == 0) {
-        // 3) If the list is empty (you are stuck), scan to locate any cell that has been visited that is next to a cell
-        // that has not.  Set that as the current cell and go to 2.
-        console.log("Dead end", cell);
-        continue;
       }
+    }
 
-      // // 4) Choose randomly from that list of available directions.
-      next = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
-      this.openCell(x, y, HexCell.CARDINALS[next.cardinal]);
-
-      // // 7) If all cells have at least one door, we're done.  Otherwise go to 2.
-
+    if(next == null) {
+      return;
+    } else {
+      this.generateMaze(next, i+1);
     }
   }
 };
