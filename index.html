@@ -4,28 +4,33 @@
 <h1>Seneca.io procedural business card</h1>
 <h2>SVG hexagonal maze generation</h2>
 
-<div id="maze" />
+<div id="maze"></div>
 
 <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
 <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script> -->
 <script src="js/jquery.min.js"></script>
 <script src="js/raphael-min.js"></script>
 <script src="js/hexgrid.js"></script>
+<script src="js/hexmaze.js"></script>
 <script src="js/hexcell.js"></script>
 <script>
 const width = 800;
-const height = 600;
+const height = 800;
 const radius = 20;
 
 $(function() {
+  $("#maze").css({width: width, height: height});
   var paper = new Raphael("maze", width, height);
-  var grid;
 
   function draw() {
-    var w = 13; //Math.floor(width / (radius*2));
-    var h = Math.ceil(height / (radius* 3/2));
+    var w = Math.floor(width / Math.ceil((radius*2) * (3 / 2) ) );
+    var h = Math.floor(height / Math.ceil(radius/2 * Math.sqrt(3)));
 
-    grid = new HexGrid(radius, w, h);
+    var grid = new HexGrid(radius, w, h);
+
+    // Now randomise the cells into a maze
+    new HexMaze(grid).generate( grid.getCell(0,0) );
+
     grid.render(paper);
   }
 

@@ -13,9 +13,6 @@ var HexGrid = function(radius, w, h) {
       this.grid[i][j]= new HexCell(radius, j, i);
     }
   }
-
-  // Now open doors within the hexagon cells to make a maze
-  this.generateMaze( this.getCell(0,0) );
 }
 
 // Simplify X/Y accessors for cells
@@ -37,11 +34,12 @@ HexGrid.prototype.openCell = function(x, y, cardinal) {
 // Render the grid to a Raphael paper
 HexGrid.prototype.render = function(paper) {
   var cell;
-
+  var path = "";
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
       paper.path(cell.toString());
+      // path += cell.render();
 
       // // DEBUG
       // if(this.renderAccessibleNeighbourCardinals) {
@@ -96,6 +94,7 @@ HexGrid.prototype.render = function(paper) {
       //   // -- end debug code
     }
   }
+  // paper.path(path);
 };
 
 // Which neighbouring cells can be moved into?
@@ -136,15 +135,15 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   // If first column
   if(cell.gridX == 0) {
     if(!even) {
-      notAccessible('northWest','southWest'); 
+      notAccessible('northWest','southWest');
     }
   }
   // Last column
   if(cell.gridX == this.width - 1) {
     if(even) {
-      notAccessible('northEast'); 
+      notAccessible('northEast');
       if(cell.gridY <= this.height - 2) {
-        notAccessible('southEast'); 
+        notAccessible('southEast');
       }
     }
   }
@@ -157,66 +156,4 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   }
 
   return neighbours;
-};
-
-// Source: http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
-// Here’s the mile-high view of recursive backtracking:
-// * Choose a starting point in the field.
-// * Randomly choose a wall at that point and carve a passage through to the
-//   adjacent cell, but only if the adjacent cell has not been visited yet. 
-//   This becomes the new current cell.
-// * If all adjacent cells have been visited, back up to the last cell that
-//   has uncarved walls and repeat.
-// * The algorithm ends when the process has backed all the way up to the
-//   starting point.
-HexGrid.prototype.generateMaze = function(cell, i) {
-  if(!cell) return;
-
-  var that = this,
-      next = null,
-      accessibleNeighbours = [],
-      closedNeighbours = [];
-
-  // Find any neighbours we can walk to
-  accessibleNeighbours = this.getAccessibleNeighbours(cell);
-  // Filter them to one's without any open sides
-  $.each(accessibleNeighbours, function(cardinal, gridCoords) {
-    var neighbour = that.getCell( gridCoords[0] , gridCoords[1] );
-    if(neighbour && neighbour.isClosed()) {
-      closedNeighbours.push({ cardinal: cardinal, cell: neighbour });
-    }
-  });
-
-  if(closedNeighbours.length > 0) {
-    // Choose randomly from that list of available directions.
-    var r = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
-    // Open a side randomly in the current cell
-    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[r.cardinal]);
-    next = r.cell;
-  } else {
-    // If the list is empty (you are stuck), scan to locate any cell that has 
-    // been visited that is next to a cell that has not and recurse with it.
-    var t = null;
-    
-    // Randomly open an edge so there are no unopened hex cells
-    var keys = Object.keys(accessibleNeighbours);
-    var k = keys[ Math.round( Math.random() * (keys.length - 1)) ];
-    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[k] );
-
-    closed_cell_search: //label
-    for(var y=0; y < this.height; y++) {
-      for(var x=0; x < this.width; x++) {
-        t = this.getCell(x, y);
-        if(t.seen) continue;
-        t.seen = true;
-        if(t.isClosed()) {
-          next = t;
-          break closed_cell_search;
-        }
-      }
-    }
-    // Note: If all cells have at least one door, we're done. Otherwise recurse.
-  }
-
-  this.generateMaze(next);
 };
