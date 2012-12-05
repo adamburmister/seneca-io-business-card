@@ -29,7 +29,7 @@ $(function() {
     var grid = new HexGrid(radius, w, h);
 
     // Now randomise the cells into a maze
-    new HexMaze(grid).generate( grid.getCell(0,0) );
+    new HexMaze(grid).generate( grid.getCell(0,0), grid.getCell(grid.width-1, grid.height-1) );
 
     grid.render(paper);
   }

@@ -119,6 +119,5 @@ HexCell.prototype.toString = function() {
   if(this.sides[0] === HexCell.CLOSED) {
     path += "L" + this.points[0][0] + "," + this.points[0][1]
   }
-  // path += "Z";
   return path;
 }

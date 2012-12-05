@@ -1,4 +1,7 @@
-/* Generate a maze from a hexagon grid */
+/**
+ Generate a maze from a hexagon grid.
+ @param {HexGrid} The populated grid to mazify (look, I made up a word!)
+ */
 var HexMaze = function(grid) {
   this.grid = grid;
 }
@@ -13,7 +16,7 @@ var HexMaze = function(grid) {
 //   has uncarved walls and repeat.
 // * The algorithm ends when the process has backed all the way up to the
 //   starting point.
-HexMaze.prototype.generate = function(cell) {
+HexMaze.prototype.generate = function(cell, target) {
   if(!cell) return;
 
   var grid = this.grid,
