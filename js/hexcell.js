@@ -43,6 +43,7 @@ HexCell.prototype.calcPoints = function() {
 
 // Calculate the grid neighbours
 HexCell.prototype.calcNeighbours = function() {
+  // THIS IS BAD
   this.neighbours.north     = [this.gridX - 1, this.gridY - 1];
   this.neighbours.northEast = [this.gridX,     this.gridY - 1];
   this.neighbours.southEast = [this.gridX + 1, this.gridY];

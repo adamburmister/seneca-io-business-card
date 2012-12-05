@@ -42,14 +42,12 @@ HexGrid.prototype.render = function(paper) {
       cell = this.getCell(x,y);
       paper.path(cell.toString());
 
+      // DEBUG
       if(renderAccessibleNeighbourCardinals) {
-        // console.log(cell.points);
-
         var dx = 0;
         var dy = 0;
         var coords;
         $.each(this.getAccessibleNeighbours(cell), function(cardinal) {
-          // console.log(neighbour);
           if(true || cardinal == "northWest") {
             coords = cell.points[ cardToPointIndex[cardinal] ];
             dx = dy = 0;
@@ -83,6 +81,7 @@ HexGrid.prototype.render = function(paper) {
             paper.circle(coords[0] + dx, coords[1] + dy, r);
           }
         });
+        // -- end debug code
       }
     }
   }
@@ -91,9 +90,6 @@ HexGrid.prototype.render = function(paper) {
 // Which neighbouring cells can be moved into?
 HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   var neighbours = {};
-  // We take the full range of cardials then prune them back to the ones
-  // this cell can access. Since rejecting from an array isn't that easy
-  // in JS i'm using a string
   var cardinals = Object.keys(cell.neighbours);
   var isOdd = (cell.gridY % 2 != 0);
 
@@ -140,46 +136,6 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
       }
     }
   }
-  console.log("Cell", cell.gridX, cell.gridY, cardinals);
-
-  // var middle = (cell.gridY > 1 && cell.gridY < this.height - 3);
-  // var center = isOdd ? () : ();
-
-  // if(center && middle) {
-  //   cardinals = ['north','northEast','southEast','south','southWest','northWest'];
-  // } else {
-
-  // }
-
-  // // first column
-  // if(cell.gridX == 0) {
-  //   if(cell.gridY == 0) {
-  //     cardinals = cardinals.replace(/(north|northEast|northWest)(,+|$)/g,"")
-  //   } else if(cell.gridY == 1) {
-  //     cardinals = cardinals.replace(/(north|(north|south)+West)(,+|$)/g,"");
-  //   } else if(isOdd) {
-  //     cardinals = cardinals.replace(/(north|south)+West(,+|$)/g,"");
-  //   }
-  // }
-
-  // // Last column
-  // if(cell.gridX == this.width - 1) {
-  //   cardinals = cardinals.replace(/(northEast|southEast)(,+|$)/g,"");
-  //   if(cell.gridY == 0) {
-  //     cardinals = cardinals.replace(/(northWest|north)(,+|$)/g,"")
-  //   }
-  //   if(cell.gridY >= this.height - 3) {
-  //     cardinals = cardinals.replace(/south(,+|$)/g,"")
-  //   }
-  // }
-
-  // // Last row
-  // if(cell.gridY == this.height - 1) {
-  //   // cardinals = cardinals.replace(/south(,+|$)/g,"")
-  //   // if(cell.gridX == this.height - 1) {
-  //     cardinals = cardinals.replace(/(south|southEast|southWest|northWest)(,+|$)/g,"")
-  //   // }
-  // }
 
   // Copy the accessible cardinals to the response
   // cardinals = cardinals.replace(/,$/g,"").split(",");
@@ -207,16 +163,23 @@ HexGrid.prototype.generateMaze = function() {
 
       // 2) Check the neighboring cells:  Make a list of neighbors that have never been visited (i.e., have no doors).
       // When done, the list contain up to six possible directions to move.
-      for(var i=0; i < neighbours.length; i++) {
-        var nCell = neighbours[i];
-        if(nCell.isClosed()) {
-          closedNeighbours.push(nCell);
-        }
-      }
+      var that = this;
+      $.each(neighbours, function(cardinal, gridCoords) {
+        // var neighbour = that.getCell(gridCoords[1], gridCoords[0]);
+        // console.log(cell.gridX, cell.gridY, cardinal, gridCoords, neighbour);
+        // if(!neighbour) {
+        //   console.log("Neighbour not found", gridCoords[1], gridCoords[0])
+        //   return;
+        // }
+        // if(neighbour.isClosed()) {
+        //   closedNeighbours.push(neighbour);
+        // }
+      });
 
       if(closedNeighbours.length == 0) {
         // 3) If the list is empty (you are stuck), scan to locate any cell that has been visited that is next to a cell
         // that has not.  Set that as the current cell and go to 2.
+        console.log("Dead end", cell);
       }
 
       // 4) Choose randomly from that list of available directions.
