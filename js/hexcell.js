@@ -70,12 +70,12 @@ HexCell.prototype.setSide = function(i, state) {
   this.sides[i] = state;
 
   var correspondingNeighbour = {
-    1: this.neighbours.northWest,
-    2: this.neighbours.north,
-    3: this.neighbours.northEast,
-    4: this.neighbours.southEast,
-    5: this.neighbours.south,
-    6: this.neighbours.southWest
+    0: this.neighbours.northWest,
+    1: this.neighbours.north,
+    2: this.neighbours.northEast,
+    3: this.neighbours.southEast,
+    4: this.neighbours.south,
+    5: this.neighbours.southWest
   };
 
   return {

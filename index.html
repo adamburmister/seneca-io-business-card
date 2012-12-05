@@ -3,22 +3,25 @@
 
 <div id="maze" />
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script> -->
+<script src="js/jquery.min.js"></script>
+<script src="js/raphael-min.js"></script>
 <script src="js/hexgrid.js"></script>
 <script src="js/hexcell.js"></script>
 <script>
 const width = 800;
 const height = 600;
-const radius = 12;
+const radius = 40;
 
 $(function() {
   var paper = new Raphael("maze", width, height);
   var grid;
 
   function draw() {
-    var w = 20; //Math.ceil(width / (radius*2)) + 1
-    var h = 40; //Math.ceil(height / (radius* 3/2))
+    var w = 4; //Math.ceil(width / (radius*2)) + 1
+    var h = 7; //Math.ceil(height / (radius* 3/2))
+
     grid = new HexGrid(radius, w, h);
     grid.render(paper);
   }

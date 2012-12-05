@@ -60,11 +60,11 @@ describe("HexCell Grid", function() {
       expect(Object.keys(neighbours)).toContain('south','southWest');
     });
 
-    it("2,1 - first row, last column", function() {
+    it("2,1 - second row, last column", function() {
       var cell = grid.getCell(2,1);
       var neighbours = grid.getAccessibleNeighbours(cell);
-      expect(Object.keys(neighbours).length).toBe(4);
-      expect(Object.keys(neighbours)).toContain('north','northWest','southWest','south');
+      expect(Object.keys(neighbours).length).toBe(5);
+      expect(Object.keys(neighbours)).toContain('northWest','southWest','south','southEast','southWest');
     });
 
     it("2,3 - bottom row", function() {

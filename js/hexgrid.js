@@ -3,6 +3,8 @@ var HexGrid = function(radius, w, h) {
   this.width = w;
   this.height = h;
 
+  // Create a 2D array for the grid
+  // The first accesor is Y, the second is X (rotate the board 90deg in your head)
   this.grid = new Array(this.height);
   for (var i=0; i <= this.height; i++) {
     this.grid[i] = new Array(this.width);
@@ -11,27 +13,134 @@ var HexGrid = function(radius, w, h) {
     }
   }
 
+  // Now open doors within the hexagon cells to make a maze
   this.generateMaze();
 }
 
+// Simplify X/Y accessors for cells
 HexGrid.prototype.getCell = function(x, y) {
   return this.grid[y][x];
 };
 
+// Render the grid to a Raphael paper
 HexGrid.prototype.render = function(paper) {
   var cell;
+
+  var renderAccessibleNeighbourCardinals = true;
+  var r = 3;
+  var cardToPointIndex = {
+    north:     0,
+    northEast: 1,
+    southEast: 2,
+    south:     3,
+    southWest: 4,
+    northWest: 5
+  };
+
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
       paper.path(cell.toString());
+
+      if(renderAccessibleNeighbourCardinals) {
+        // console.log(cell.points);
+
+        var dx = 0;
+        var dy = 0;
+        var coords;
+        $.each(this.getAccessibleNeighbours(cell), function(cardinal) {
+          // console.log(neighbour);
+          if(true || cardinal == "northWest") {
+            coords = cell.points[ cardToPointIndex[cardinal] ];
+            dx = dy = 0;
+
+            switch(cardinal) {
+              case "north":
+                dx = (cell.side - (cell.width - cell.side)) / 2;
+                dy = (r*2);
+                break;
+              case "northEast":
+                dx = (cell.radius / 4) - r*2;
+                dy = (cell.height / 4) + r*2;
+                break;
+              case "northWest":
+                dx = (cell.radius / 4) + r*2;
+                dy = -(cell.height / 4) + r*2;
+                break;
+              case "southEast":
+                dx = -(cell.radius / 4) - r*2;
+                dy = (cell.height / 4) - r;
+                break;
+              case "southWest":
+                dx = -r;
+                dy = -(cell.height / 4) -r;
+                break;
+              case "south":
+                dx = -(cell.side - (cell.width - cell.side)) / 2;
+                dy = -r*2;
+            }
+
+            paper.circle(coords[0] + dx, coords[1] + dy, r);
+          }
+        });
+      }
     }
   }
 };
 
+// Which neighbouring cells can be moved into?
 HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   var neighbours = {};
-  var cardinals = [];//Object.keys(cell.neighbours).join(",");
+  // We take the full range of cardials then prune them back to the ones
+  // this cell can access. Since rejecting from an array isn't that easy
+  // in JS i'm using a string
+  var cardinals = Object.keys(cell.neighbours);
   var isOdd = (cell.gridY % 2 != 0);
+
+  function notAccessible() {
+    var removed = [];
+    for(var i in arguments) {
+      var s = arguments[i];
+      var p = cardinals.indexOf(s);
+      if(p != -1) {
+        removed = cardinals.splice(p , 1);
+      }
+    }
+    return removed;
+  }
+
+  // If in top 2 rows
+  if(cell.gridY <= 1) {
+    notAccessible('north');
+  }
+  // top-most row
+  if(cell.gridY == 0) {
+    notAccessible('northWest','northEast');
+  }
+  // Bottom rows
+  if(cell.gridY >= this.height - 2) {
+    notAccessible('south');
+  }
+  // Bottom-most row
+  if(cell.gridY == this.height - 1) {
+    notAccessible('southEast','southWest');
+  }
+
+  // If first column
+  if(cell.gridX == 0) {
+    if(isOdd) {
+      notAccessible('northWest','southWest'); 
+    }
+  }
+  // Last column
+  if(cell.gridX == this.width - 1) {
+    if(!isOdd) {
+      if(cell.gridY <= this.height - 2) {
+        notAccessible('northEast','southEast'); 
+      }
+    }
+  }
+  console.log("Cell", cell.gridX, cell.gridY, cardinals);
 
   // var middle = (cell.gridY > 1 && cell.gridY < this.height - 3);
   // var center = isOdd ? () : ();
@@ -84,7 +193,6 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
 
 
 HexGrid.prototype.generateMaze = function() {
-
   // http://www.experts-exchange.com/Programming/Languages/Scripting/JavaScript/A_7849-Hex-Maze.html
 
   var cell,
