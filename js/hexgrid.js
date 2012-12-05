@@ -27,15 +27,6 @@ HexGrid.prototype.render = function(paper) {
   var cell;
 
   var renderAccessibleNeighbourCardinals = true;
-  var r = 3;
-  var cardToPointIndex = {
-    north:     0,
-    northEast: 1,
-    southEast: 2,
-    south:     3,
-    southWest: 4,
-    northWest: 5
-  };
 
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
@@ -44,6 +35,16 @@ HexGrid.prototype.render = function(paper) {
 
       // DEBUG
       if(renderAccessibleNeighbourCardinals) {
+        var r = 2;
+        var cardToPointIndex = {
+          north:     0,
+          northEast: 1,
+          southEast: 2,
+          south:     3,
+          southWest: 4,
+          northWest: 5
+        };
+
         var dx = 0;
         var dy = 0;
         var coords;
@@ -78,7 +79,7 @@ HexGrid.prototype.render = function(paper) {
                 dy = -r*2;
             }
 
-            paper.circle(coords[0] + dx, coords[1] + dy, r);
+            paper.circle(coords[0] + dx, coords[1] + dy, r).attr({"fill":"#ccc", "stroke":""});
           }
         });
         // -- end debug code
@@ -131,8 +132,9 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   // Last column
   if(cell.gridX == this.width - 1) {
     if(!isOdd) {
+      notAccessible('northEast'); 
       if(cell.gridY <= this.height - 2) {
-        notAccessible('northEast','southEast'); 
+        notAccessible('southEast'); 
       }
     }
   }

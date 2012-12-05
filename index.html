@@ -1,6 +1,9 @@
 <html>
 <body>
 
+<h1>Seneca.io procedural business card</h1>
+<h2>SVG hexagonal maze generation</h2>
+
 <div id="maze" />
 
 <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
@@ -12,15 +15,15 @@
 <script>
 const width = 800;
 const height = 600;
-const radius = 40;
+const radius = 30;
 
 $(function() {
   var paper = new Raphael("maze", width, height);
   var grid;
 
   function draw() {
-    var w = 3; //Math.ceil(width / (radius*2)) + 1
-    var h = 6; //Math.ceil(height / (radius* 3/2))
+    var w = 5; //Math.ceil(width / (radius*2)) + 1
+    var h = 9; //Math.ceil(height / (radius* 3/2))
 
     grid = new HexGrid(radius, w, h);
     grid.render(paper);
