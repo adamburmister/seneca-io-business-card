@@ -1,6 +1,6 @@
 /* Construct a hexagon cell of a given radius at grid x, y coordinates */
 var HexGrid = function(radius, w, h) {
-  this.renderAccessibleNeighbourCardinals = false
+  // this.renderAccessibleNeighbourCardinals = false;
   this.width = w;
   this.height = h;
 
@@ -15,16 +15,7 @@ var HexGrid = function(radius, w, h) {
   }
 
   // Now open doors within the hexagon cells to make a maze
-  this.generateMaze();
-
-  // // var d = this.getCell(2,5);
-  // // console.log( this.getAccessibleNeighbours(d) );
-  // this.openCell(0,2, HexCell.CARDINALS.north);
-  // this.openCell(0,2, HexCell.CARDINALS.northWest);
-  // this.openCell(0,2, HexCell.CARDINALS.northEast);
-  // this.openCell(0,2, HexCell.CARDINALS.south);
-  // this.openCell(0,2, HexCell.CARDINALS.southWest);
-  // this.openCell(0,2, HexCell.CARDINALS.southEast);
+  this.generateMaze( this.getCell(0,0) );
 }
 
 // Simplify X/Y accessors for cells
@@ -52,57 +43,57 @@ HexGrid.prototype.render = function(paper) {
       cell = this.getCell(x,y);
       paper.path(cell.toString());
 
-      // DEBUG
-      if(this.renderAccessibleNeighbourCardinals) {
-        var r = 2;
-        var cardToPointIndex = {
-          north:     0,
-          northEast: 1,
-          southEast: 2,
-          south:     3,
-          southWest: 4,
-          northWest: 5
-        };
+      // // DEBUG
+      // if(this.renderAccessibleNeighbourCardinals) {
+      //   var r = 2;
+      //   var cardToPointIndex = {
+      //     north:     0,
+      //     northEast: 1,
+      //     southEast: 2,
+      //     south:     3,
+      //     southWest: 4,
+      //     northWest: 5
+      //   };
 
-        var dx = 0;
-        var dy = 0;
-        var coords;
-        $.each(this.getAccessibleNeighbours(cell), function(cardinal) {
-          if(true || cardinal == "northWest") {
-            coords = cell.points[ cardToPointIndex[cardinal] ];
-            dx = dy = 0;
+      //   var dx = 0;
+      //   var dy = 0;
+      //   var coords;
+      //   $.each(this.getAccessibleNeighbours(cell), function(cardinal) {
+      //     if(true || cardinal == "northWest") {
+      //       coords = cell.points[ cardToPointIndex[cardinal] ];
+      //       dx = dy = 0;
 
-            switch(cardinal) {
-              case "north":
-                dx = (cell.side - (cell.width - cell.side)) / 2;
-                dy = (r*2);
-                break;
-              case "northEast":
-                dx = (cell.radius / 4) - r*2;
-                dy = (cell.height / 4) + r*2;
-                break;
-              case "northWest":
-                dx = (cell.radius / 4) + r*2;
-                dy = -(cell.height / 4) + r*2;
-                break;
-              case "southEast":
-                dx = -(cell.radius / 4) - r*2;
-                dy = (cell.height / 4) - r;
-                break;
-              case "southWest":
-                dx = -r;
-                dy = -(cell.height / 4) -r;
-                break;
-              case "south":
-                dx = -(cell.side - (cell.width - cell.side)) / 2;
-                dy = -r*2;
-            }
+      //       switch(cardinal) {
+      //         case "north":
+      //           dx = (cell.side - (cell.width - cell.side)) / 2;
+      //           dy = (r*2);
+      //           break;
+      //         case "northEast":
+      //           dx = (cell.radius / 4) - r*2;
+      //           dy = (cell.height / 4) + r*2;
+      //           break;
+      //         case "northWest":
+      //           dx = (cell.radius / 4) + r*2;
+      //           dy = -(cell.height / 4) + r*2;
+      //           break;
+      //         case "southEast":
+      //           dx = -(cell.radius / 4) - r*2;
+      //           dy = (cell.height / 4) - r;
+      //           break;
+      //         case "southWest":
+      //           dx = -r;
+      //           dy = -(cell.height / 4) -r;
+      //           break;
+      //         case "south":
+      //           dx = -(cell.side - (cell.width - cell.side)) / 2;
+      //           dy = -r*2;
+      //       }
 
-            paper.circle(coords[0] + dx, coords[1] + dy, r).attr({"fill":"#ccc", "stroke":""});
-          }
-        });
-        // -- end debug code
-      }
+      //       paper.circle(coords[0] + dx, coords[1] + dy, r).attr({"fill":"#ccc", "stroke":""});
+      //     }
+      //   });
+      // }
+      //   // -- end debug code
     }
   }
 };
@@ -168,22 +159,27 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   return neighbours;
 };
 
+// Source: http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
+// Here’s the mile-high view of recursive backtracking:
+// * Choose a starting point in the field.
+// * Randomly choose a wall at that point and carve a passage through to the
+//   adjacent cell, but only if the adjacent cell has not been visited yet. 
+//   This becomes the new current cell.
+// * If all adjacent cells have been visited, back up to the last cell that
+//   has uncarved walls and repeat.
+// * The algorithm ends when the process has backed all the way up to the
+//   starting point.
 HexGrid.prototype.generateMaze = function(cell, i) {
-  // This is a recursive function. If no cell is passed its interation-0
-  // Pick the top left most cell to begin walking the maze
-  if(cell === undefined) {
-    cell = this.getCell(0,0);
-    i = 0;
-  }
+  if(!cell) return;
 
   var that = this,
       next = null,
-      closedNeighbours = [],
-      accessibleNeighbours = [];
+      accessibleNeighbours = [],
+      closedNeighbours = [];
 
-  // Find any neighbours who have no open sides
+  // Find any neighbours we can walk to
   accessibleNeighbours = this.getAccessibleNeighbours(cell);
-
+  // Filter them to one's without any open sides
   $.each(accessibleNeighbours, function(cardinal, gridCoords) {
     var neighbour = that.getCell( gridCoords[0] , gridCoords[1] );
     if(neighbour && neighbour.isClosed()) {
@@ -191,23 +187,23 @@ HexGrid.prototype.generateMaze = function(cell, i) {
     }
   });
 
-  // If the list is empty (you are stuck), scan to locate any cell that has 
-  // been visited that is next to a cell that has not and recurse with it.
   if(closedNeighbours.length > 0) {
     // Choose randomly from that list of available directions.
-    next = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
-    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[next.cardinal]);
-    this.generateMaze(next.cell, i+1);
+    var r = closedNeighbours[ Math.round( Math.random() * (closedNeighbours.length - 1) ) ];
+    // Open a side randomly in the current cell
+    this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[r.cardinal]);
+    next = r.cell;
   } else {
-    // If all cells have at least one door, we're done. Otherwise recurse.
+    // If the list is empty (you are stuck), scan to locate any cell that has 
+    // been visited that is next to a cell that has not and recurse with it.
     var t = null;
     
-    // Randomly open an edge
+    // Randomly open an edge so there are no unopened hex cells
     var keys = Object.keys(accessibleNeighbours);
     var k = keys[ Math.round( Math.random() * (keys.length - 1)) ];
     this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[k] );
 
-    closed_cell_search:
+    closed_cell_search: //label
     for(var y=0; y < this.height; y++) {
       for(var x=0; x < this.width; x++) {
         t = this.getCell(x, y);
@@ -219,11 +215,8 @@ HexGrid.prototype.generateMaze = function(cell, i) {
         }
       }
     }
-
-    if(next == null) {
-      return;
-    } else {
-      this.generateMaze(next, i+1);
-    }
+    // Note: If all cells have at least one door, we're done. Otherwise recurse.
   }
+
+  this.generateMaze(next);
 };

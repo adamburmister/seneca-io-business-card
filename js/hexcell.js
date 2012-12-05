@@ -30,7 +30,7 @@ HexCell.CARDINALS = {
   southWest: 5
 }
 
-// Hexagon math
+// Calculate the corner points of the hexagon
 HexCell.prototype.calcPoints = function() {
   var halfRadius = Math.floor(this.radius / 2);
   var halfHeight = Math.floor(this.height / 2);
@@ -46,7 +46,7 @@ HexCell.prototype.calcPoints = function() {
   }
 }
 
-// Calculate the grid neighbours
+// Calculate the coordinates of neighbours in the grid
 HexCell.prototype.calcNeighbours = function() {
   var even = (this.gridY % 2 == 0);
 
@@ -66,7 +66,7 @@ HexCell.prototype.calcNeighbours = function() {
   }
 }
 
-// @return boolean Are there any open sides in this cell?
+// @return {boolean} Are there any open sides in this cell?
 HexCell.prototype.isClosed = function() {
   var closed = true;
   for(var i=0; i<this.sides.length; i++) {
@@ -77,9 +77,9 @@ HexCell.prototype.isClosed = function() {
 
 /**
  Set the side edge state for the hexagon cell to be open or closed
- @param i 0-based index of side
- @param state boolean False for closed, true for open
- @returns coordinates of the neighbour in the parent grid to modify to the same state
+ @param {integer} i 0-based index of side
+ @param {boolean} state False for closed, true for open
+ @return {object} coordinates of the neighbour in the parent grid to modify to the same state
 */
 HexCell.prototype.setSide = function(i, state) {
   this.sides[i] = state;
@@ -99,6 +99,9 @@ HexCell.prototype.setSide = function(i, state) {
   };
 }
 
+/**
+ @return {string} Render the cell to a string for Raphael to work with
+ */
 HexCell.prototype.toString = function() {
   var path = "";
   var x, y, a;

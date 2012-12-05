@@ -15,15 +15,15 @@
 <script>
 const width = 800;
 const height = 600;
-const radius = 30;
+const radius = 20;
 
 $(function() {
   var paper = new Raphael("maze", width, height);
   var grid;
 
   function draw() {
-    var w = 8; //Math.ceil(width / (radius*2)) + 1
-    var h = 20; //Math.ceil(height / (radius* 3/2))
+    var w = 13; //Math.floor(width / (radius*2));
+    var h = Math.ceil(height / (radius* 3/2));
 
     grid = new HexGrid(radius, w, h);
     grid.render(paper);
