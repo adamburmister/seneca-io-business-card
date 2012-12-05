@@ -2,8 +2,14 @@
  Generate a maze from a hexagon grid.
  @param {HexGrid} The populated grid to mazify (look, I made up a word!)
  */
-var HexMaze = function(grid) {
+var HexMaze = function(grid, entrance, exit) {
   this.grid = grid;
+  this.entrance = entrance;
+  this.exit = exit;
+  
+  // Find un-accessible
+  this.entrance.sides[0] = HexCell.OPEN;
+  this.exit.sides[3] = HexCell.OPEN;
 }
 
 // Source: http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
@@ -16,7 +22,15 @@ var HexMaze = function(grid) {
 //   has uncarved walls and repeat.
 // * The algorithm ends when the process has backed all the way up to the
 //   starting point.
-HexMaze.prototype.generate = function(cell, target) {
+/**
+ @param {HexCell} the current cell
+ @param {HexCell} the cell we're exiting from
+ */
+HexMaze.prototype.generate = function() {
+  this._recursivelyGenerate(this.entrance, this.exit);
+};
+
+HexMaze.prototype._recursivelyGenerate = function(cell, exit) {
   if(!cell) return;
 
   var grid = this.grid,
@@ -48,7 +62,7 @@ HexMaze.prototype.generate = function(cell, target) {
     // Randomly open an edge so there are no unopened hex cells
     var keys = Object.keys(accessibleNeighbours);
     var k = keys[ Math.round( Math.random() * (keys.length - 1)) ];
-    // this.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[k] );
+    grid.openCell(cell.gridX, cell.gridY, HexCell.CARDINALS[k] );
 
     closed_cell_search: //label
     for(var y=0; y < grid.height; y++) {
@@ -65,5 +79,14 @@ HexMaze.prototype.generate = function(cell, target) {
     // Note: If all cells have at least one door, we're done. Otherwise recurse.
   }
 
-  this.generate(next);
+  this._recursivelyGenerate(next);
+};
+
+HexMaze.prototype.render = function(paper) {
+  this.grid.render(paper);
+  var r = 5;
+  var a = this.entrance.getCenter();
+  var b = this.exit.getCenter();
+  paper.circle(a[0], a[1], r).attr({"fill":"#f00","stroke":""});
+  paper.circle(b[0], b[1], r).attr({"fill":"#f00","stroke":""});
 };

@@ -97,7 +97,14 @@ HexCell.prototype.setSide = function(i, state) {
     gridCoords: correspondingNeighbour[i],
     state: state
   };
-}
+};
+
+HexCell.prototype.getCenter = function() {
+  return [
+    Math.round(this.points[0][0] + this.radius / 2), 
+    Math.round(this.points[1][1] + this.height / 2)
+  ];
+};
 
 /**
  @return {string} Render the cell to a string for Raphael to work with

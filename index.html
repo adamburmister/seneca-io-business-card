@@ -1,7 +1,9 @@
 <html>
 <head>
 	<link href='http://fonts.googleapis.com/css?family=Lato:300italic' rel='stylesheet' type='text/css'>
-  <style>html,body{width:100%;height:100%;padding:0;margin:0;}body{background-color:#71c6d2;color:#b8e2e8;font-family:"Lato",sans-serif;padding:20px;}h1{background:url(http://www.seneca.io/logo.png) no-repeat top left;width:530px;height:90px;text-indent:-999em;overflow:hidden;}h2{margin:40px 0;font-style:italic;font-size:25px;font-weight:300;letter-spacing:1px;}a{color:#5a9ea8;}</style>
+  <style>html,body{width:100%;height:100%;padding:0;margin:0;}body{background-color:#71c6d2;color:#b8e2e8;font-family:"Lato",sans-serif;padding:20px;}h1{background:url(http://www.seneca.io/logo.png) no-repeat top left;width:530px;height:90px;text-indent:-999em;overflow:hidden;}h2{margin:40px 0;font-style:italic;font-size:25px;font-weight:300;letter-spacing:1px;}a{color:#5a9ea8;}
+    #maze {shape-rendering: geometricPrecision;}
+  </style>
 
 </head>
 <body>
@@ -34,9 +36,9 @@ $(function() {
     var grid = new HexGrid(radius, w, h);
 
     // Now randomise the cells into a maze
-    new HexMaze(grid).generate( grid.getCell(0,0), grid.getCell(grid.width-1, grid.height-1) );
-
-    grid.render(paper);
+    var maze = new HexMaze(grid, grid.getCell(0,0), grid.getCell(grid.width-1, grid.height-1));
+    maze.generate();
+    maze.render(paper);
   }
 
   draw();
