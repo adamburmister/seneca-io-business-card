@@ -40,6 +40,7 @@ HexGrid.prototype.render = function(paper) {
       paper.path(cell.toString());
     }
   }
+  return paper;
 };
 
 // Which neighbouring cells can be moved into?
