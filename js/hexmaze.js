@@ -48,6 +48,7 @@ HexMaze.prototype.render = function(paper) {
   var r = this.grid.radius / 2.5;
   var a = this.entrance.getCenter();
   var b = this.exit.getCenter();
-  paper.circle(a[0], a[1], r).attr({"fill":"#fff","stroke":""});
-  paper.circle(b[0], b[1], r).attr({"fill":"#fff","stroke":""});
+
+  paper.circle(a[0], a[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""});
+  paper.circle(b[0], b[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""});
 };
