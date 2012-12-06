@@ -44,11 +44,20 @@ HexMaze.prototype._recursivelyGenerate = function(cell) {
 
 // Render the grid to the paper, as well as entrance and exit points
 HexMaze.prototype.render = function(paper) {
-  this.grid.render(paper);
+  var mazeSet = paper.set();
   var r = this.grid.radius / 2.5;
   var a = this.entrance.getCenter();
   var b = this.exit.getCenter();
 
-  paper.circle(a[0], a[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""});
-  paper.circle(b[0], b[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""});
+  mazeSet.push(
+    this.grid.render(paper).attr({
+      "stroke": "#fff",
+      "stroke-width": "1.5",
+      "stroke-linecap": "round",
+    }),
+    paper.circle(a[0], a[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""}),
+    paper.circle(b[0], b[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""})
+  );
+
+  return mazeSet;
 };

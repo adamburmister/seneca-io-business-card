@@ -1,17 +1,27 @@
 <html>
 <head>
 	<link href='http://fonts.googleapis.com/css?family=Lato:300italic' rel='stylesheet' type='text/css'>
-  <style>html,body{width:100%;height:100%;padding:0;margin:0;}body{background-color:#71c6d2;color:#b8e2e8;font-family:"Lato",sans-serif;padding:20px;}h1{background:url(http://www.seneca.io/logo.png) no-repeat top left;width:530px;height:90px;text-indent:-999em;overflow:hidden;}h2{margin:40px 0;font-style:italic;font-size:25px;font-weight:300;letter-spacing:1px;}a{color:#5a9ea8;}
-    #maze {shape-rendering: geometricPrecision;}
+  <style>
+    html,body{width:100%;height:100%;padding:0;margin:0;}
+    body{background-color:#fff;color:#999;font-family:"Lato",sans-serif;padding:20px;}
+    a{color:#5a9ea8;}
+    h1,h2{color:#b8e2e8;font-style:italic;font-size:25px;font-weight:300;letter-spacing:1px;}
+    h2 { font-size: 18px }
+    #card {
+      margin: 30px;
+    }
   </style>
 
 </head>
 <body>
 
-<h1>Seneca.io</h1>
-<h2>Procedural business card generation</h2>
+<h1><a href="http://www.seneca.io">Seneca.io</a> procedurally generated business cards</h1>
+<p>This script randomly generates a hexagon maze in SVG. This SVG can be saved and used as the backs of Seneca.io's business cards.</p>
 
-<div id="maze"></div>
+<div id="card"></div>
+
+<h2>SVG Output (copy and save to file)</h2>
+<textarea id="svgOutput" cols="80" rows="20"></textarea>
 
 <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
 <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script> -->
@@ -21,28 +31,32 @@
 <script src="js/hexmaze.js"></script>
 <script src="js/hexcell.js"></script>
 <script>
-const width = 850;
-const height = 550;
-const radius = 20;
+var card = $("#card");
+var width = 250.45; // these are from the moocard dimensions
+var height = 167.24;
+const radius = 6; // hex cell size
 
 $(function() {
-  $("#maze").css({width: width, height: height});
-  var paper = new Raphael("maze", width, height);
+  var paper = new Raphael("card", width, height);
 
   function draw() {
-    var w = Math.floor(width / Math.ceil((radius*2) * (3 / 2) ) );
-    var h = Math.floor(height / Math.ceil(radius/2 * Math.sqrt(3)));
+    paper.rect(0,0,width,height).attr({"fill":"#71c6d2","stroke":""});
+
+    // var w = Math.floor(width / Math.ceil((radius*2) * (3 / 2) ) );
+    // var h = Math.floor(height / Math.ceil(radius/2 * Math.sqrt(3)));
+    var w = 12;
+    var h = 27;
 
     var grid = new HexGrid(radius, w, h);
-
-    // Now randomise the cells into a maze
     var maze = new HexMaze(grid, grid.getCell(0,0), grid.getCell(grid.width-1, grid.height-1));
+
     maze.generate();
-    maze.render(paper);
+    maze.render(paper).transform("T15,14");
   }
 
   draw();
-})
+  $("#svgOutput").val($("#card").html());
+});
 
 </script>
 </body>

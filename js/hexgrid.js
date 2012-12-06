@@ -30,23 +30,6 @@ HexGrid.prototype.openSide = function(cell, cardinal) {
   openedTo.setSide( correspondingSide, HexCell.OPEN);
 }
 
-// Render the grid to a Raphael paper
-HexGrid.prototype.render = function(paper) {
-  var cell;
-  var path = "";
-  for(var y = 0; y < this.height; y++) {
-    for(var x = 0; x < this.width; x++) {
-      cell = this.getCell(x,y);
-      paper.path(cell.toString()).attr({
-        "stroke": "#fff",
-        "stroke-width": "4px",
-        "stroke-linecap": "round",
-      });
-    }
-  }
-  return paper;
-};
-
 // Find neighbouring cells which are non-boundary and can be moved into
 // @param {HexCell} Find accessible neighbours for this cell
 // @param {boolean} closed Only return neighbours that are closed
@@ -111,4 +94,17 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell, closed) {
   }
 
   return neighbours;
+};
+
+// Render the grid to a Raphael paper
+HexGrid.prototype.render = function(paper) {
+  var cell;
+  var path = "";
+  for(var y = 0; y < this.height; y++) {
+    for(var x = 0; x < this.width; x++) {
+      cell = this.getCell(x,y);
+      path += cell.toString();
+    }
+  }
+  return paper.path(path);
 };
