@@ -1,7 +1,9 @@
-seneca-io-business-card
-=======================
+Seneca.io procedurally generated business cards
+===
 
 Generates a hexagon maze for the Seneca.io business cards. Built using jQuery and SVG with Raphaël.
+
+Clone the repo, open index.html to view the maze generation.
 
 Converting SVG to PDF
 ---
