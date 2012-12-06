@@ -1,5 +1,6 @@
 <html>
 <head>
+  <title>Seneca.io procedurally generated business cards</title>
 	<link href='http://fonts.googleapis.com/css?family=Lato:300italic' rel='stylesheet' type='text/css'>
   <style>
     html,body{width:100%;height:100%;padding:0;margin:0;}
@@ -18,7 +19,7 @@
 <h1><a href="http://www.seneca.io">Seneca.io</a> procedurally generated business cards</h1>
 <p>This script randomly generates a hexagon maze in SVG. This SVG can be saved and used as the backs of Seneca.io's business cards.</p>
 
-<div id="card"></div>
+<div id="card"></div><button id="btnGenerate">Regenerate</button>
 
 <h2>SVG Output (copy and save to file)</h2>
 <textarea id="svgOutput" cols="80" rows="20"></textarea>
@@ -37,9 +38,10 @@ var height = 167.24;
 const radius = 6; // hex cell size
 
 $(function() {
-  var paper = new Raphael("card", width, height);
-
   function draw() {
+    $("#card").empty();
+
+    var paper = new Raphael("card", width, height);
     paper.rect(0,0,width,height).attr({"fill":"#71c6d2","stroke":""});
 
     // var w = Math.floor(width / Math.ceil((radius*2) * (3 / 2) ) );
@@ -52,10 +54,12 @@ $(function() {
 
     maze.generate();
     maze.render(paper).transform("T15,14");
+
+    $("#svgOutput").val($("#card").html());
   }
 
   draw();
-  $("#svgOutput").val($("#card").html());
+  $("#btnGenerate").click(draw);
 });
 
 </script>
