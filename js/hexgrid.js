@@ -38,16 +38,12 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell, closed) {
   var cardinals = Object.keys(cell.neighbours);
   var even = (cell.gridY % 2 == 0);
 
+  // Remove a cardinal from the array
   function notAccessible() {
-    var removed = [];
     for(var i in arguments) {
-      var s = arguments[i];
-      var p = cardinals.indexOf(s);
-      if(p != -1) {
-        removed = cardinals.splice(p , 1);
-      }
+      var cardinal = arguments[i];
+      cardinals = cardinals.filter(function(test,idx,arr) { return test != cardinal; });
     }
-    return removed;
   }
 
   // If in top 2 rows
