@@ -23,9 +23,8 @@ HexGrid.prototype.getCell = function(x, y) {
   return this.grid[y][x];
 };
 
-HexGrid.prototype.openCell = function(x, y, cardinal) {
-  var target = this.getCell(x,y);
-  var sideNeighbour = target.setSide(cardinal, HexCell.OPEN);
+HexGrid.prototype.openSide = function(cell, cardinal) {
+  var sideNeighbour = cell.setSide(cardinal, HexCell.OPEN);
   var openedTo = this.getCell(sideNeighbour.gridCoords[0], sideNeighbour.gridCoords[1]);
   var correspondingSide = ((cardinal + 3) % 6);
   openedTo.setSide( correspondingSide, HexCell.OPEN);
@@ -38,8 +37,8 @@ HexGrid.prototype.render = function(paper) {
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
       cell = this.getCell(x,y);
-      paper.path(cell.toString()).attr({ 
-        "stroke": "#fff", 
+      paper.path(cell.toString()).attr({
+        "stroke": "#fff",
         "stroke-width": "4px",
         "stroke-linecap": "round",
       });
@@ -48,8 +47,10 @@ HexGrid.prototype.render = function(paper) {
   return paper;
 };
 
-// Which neighbouring cells can be moved into?
-HexGrid.prototype.getAccessibleNeighbours = function(cell) {
+// Find neighbouring cells which are non-boundary and can be moved into
+// @param {HexCell} Find accessible neighbours for this cell
+// @param {boolean} closed Only return neighbours that are closed
+HexGrid.prototype.getAccessibleNeighbours = function(cell, closed) {
   var neighbours = {};
   var cardinals = Object.keys(cell.neighbours);
   var even = (cell.gridY % 2 == 0);
@@ -100,10 +101,13 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell) {
   }
 
   // Copy the accessible cardinals to the response
-  // cardinals = cardinals.replace(/,$/g,"").split(",");
+  var cardinal, neighbour;
   for(var i=0; i < cardinals.length; i++) {
     cardinal = cardinals[i];
-    neighbours[cardinal] = cell.neighbours[cardinal];
+    neighbour = this.getCell(cell.neighbours[cardinal][0], cell.neighbours[cardinal][1]);
+    if(!closed || neighbour.isClosed()) {
+      neighbours[cardinal] = neighbour;
+    }
   }
 
   return neighbours;
