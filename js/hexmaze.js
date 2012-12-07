@@ -16,11 +16,13 @@ var HexMaze = function(grid, entrance, exit) {
 HexMaze.prototype.generate = function() {
   this._recursivelyGenerate(this.entrance);
 
-  this.entrance.setSide(0, HexCell.OPEN);
-  this.entrance.setSide(1, HexCell.OPEN);
+  this.entrance.setSide(HexCell.CARDINALS.northWest, HexCell.OPEN);
+  this.entrance.setSide(HexCell.CARDINALS.north, HexCell.OPEN);
+  this.entrance.setSide(HexCell.CARDINALS.northEast, HexCell.OPEN);
 
-  this.exit.setSide(3, HexCell.OPEN);
-  this.exit.setSide(4, HexCell.OPEN);
+  this.exit.setSide(HexCell.CARDINALS.southWest, HexCell.OPEN);
+  this.exit.setSide(HexCell.CARDINALS.south, HexCell.OPEN);
+  this.exit.setSide(HexCell.CARDINALS.southEast, HexCell.OPEN);
 };
 
 HexMaze.prototype._recursivelyGenerate = function(cell) {

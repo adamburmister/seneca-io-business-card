@@ -68,11 +68,12 @@ HexCell.prototype.calcNeighbours = function() {
 
 // @return {boolean} Are there any open sides in this cell?
 HexCell.prototype.isClosed = function() {
-  var closed = true;
-  for(var i=0; i<this.sides.length; i++) {
-    closed &= this.sides[i];
-  }
-  return !!closed;
+  // var closed = true;
+  // for(var i=0; i<this.sides.length; i++) {
+  //   closed &= this.sides[i];
+  // }
+  // return !!closed;
+  return this.sides.reduce(function(prev,curr){ return prev && curr })
 };
 
 /**
