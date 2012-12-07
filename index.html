@@ -48,7 +48,7 @@ $(function() {
     var maze = new HexMaze(grid, grid.getCell(0,0), grid.getCell(grid.width-1, grid.height-1));
 
     maze.generate();
-    maze.render(paper).transform("T15,14");
+    maze.render(paper).transform("T15,10");
 
     $("#svgOutput").val($("#card").html());
   }

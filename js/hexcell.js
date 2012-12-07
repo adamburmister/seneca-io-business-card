@@ -2,7 +2,7 @@
 var HexCell = function(radius, x, y) {
   this.radius = radius;
   this.width = Math.floor(radius * 2);
-  this.height = Math.floor(radius * Math.sqrt(3));
+  this.height = Math.sin(60 * (Math.PI/180)) * (radius * 2);
   this.side = Math.floor(radius * 3 / 2);  // Length of a side
   this.gridX = x;
   this.gridY = y;
@@ -101,7 +101,7 @@ HexCell.prototype.setSide = function(i, state) {
 
 HexCell.prototype.getCenter = function() {
   return [
-    Math.round(this.points[0][0] + this.radius / 2), 
+    Math.round(this.points[0][0] + this.radius / 2),
     Math.round(this.points[1][1] + this.height / 2)
   ];
 };
