@@ -26,8 +26,7 @@ HexGrid.prototype.getCell = function(x, y) {
 HexGrid.prototype.openSide = function(cell, cardinal) {
   var sideNeighbour = cell.setSide(cardinal, HexCell.OPEN);
   var openedTo = this.getCell(sideNeighbour.gridCoords[0], sideNeighbour.gridCoords[1]);
-  var correspondingSide = ((cardinal + 3) % 6);
-  openedTo.setSide( correspondingSide, HexCell.OPEN);
+  openedTo.setSide(((cardinal + 3) % 6), HexCell.OPEN);
 }
 
 // Find neighbouring cells which are non-boundary and can be moved into
@@ -92,14 +91,49 @@ HexGrid.prototype.getAccessibleNeighbours = function(cell, closed) {
   return neighbours;
 };
 
+// @param {HexCell}
+// @param {HexCell.CARDINAL|integer}
+HexGrid.prototype.getNeighbourByDirection = function(cell, cardinal) {
+  var coords = cell.neighbours[ cell.convertIntToCardinalLabel(cardinal) ];
+  return this.getCell(coords[0], coords[1]);
+};
+
+HexGrid.prototype._renderCell = function(cell) {
+  var grid = this;
+  var path = "";
+  var x, y, a, lineExists, neighbourAbove;
+  for (var i = 0; i < cell.points.length; i++) {
+    x = cell.points[i][0];
+    y = cell.points[i][1];
+    lineRendered = false;
+    // has the neighbour above rendered this line already above?
+    if(i <= HexCell.CARDINALS.northEast) {
+      if(neighbourAbove = grid.getNeighbourByDirection(cell, i)) {
+        lineRendered = (neighbourAbove.sides[((i + 3) % 6)] === HexCell.CLOSED);
+      }
+    }
+    if(i === 0 || (cell.sides[i] === HexCell.OPEN) || lineRendered) {
+      a = "M";
+    } else {
+      a = "L";
+    }
+    path += a + x + "," + y
+  }
+  // And complete the shape to the start point of closed
+  if(cell.sides[0] === HexCell.CLOSED) {
+    path += "L" + cell.points[0][0] + "," + cell.points[0][1]
+  }
+  return path;
+};
+
+
 // Render the grid to a Raphael paper
 HexGrid.prototype.render = function(paper) {
   var cell;
   var path = "";
   for(var y = 0; y < this.height; y++) {
     for(var x = 0; x < this.width; x++) {
-      cell = this.getCell(x,y);
-      path += cell.toString();
+      path += this._renderCell(this.getCell(x,y));
     }
   }
   return paper.path(path);

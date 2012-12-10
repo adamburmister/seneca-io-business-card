@@ -1,13 +1,13 @@
 /* Construct a hexagon cell of a given radius at grid x, y coordinates */
 var HexCell = function(radius, x, y) {
   this.radius = radius;
-  this.width = Math.floor(radius * 2);
+  this.width = (radius * 2);
   this.height = Math.sin(60 * (Math.PI/180)) * (radius * 2);
-  this.side = Math.floor(radius * 3 / 2);  // Length of a side
+  this.side = (radius * 3 / 2);  // Length of a side
   this.gridX = x;
   this.gridY = y;
-  this.top   = Math.floor(y * this.height / 2);
-  this.left  = Math.floor(x * this.width);
+  this.top   = (y * this.height / 2);
+  this.left  = (x * this.width);
   if(y % 2 == 0) { this.left += this.side; } // odd cells are pushed in to make the honeycomb
 
   this.sides  = [HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED, HexCell.CLOSED];
@@ -32,8 +32,8 @@ HexCell.CARDINALS = {
 
 // Calculate the corner points of the hexagon
 HexCell.prototype.calcPoints = function() {
-  var halfRadius = Math.floor(this.radius / 2);
-  var halfHeight = Math.floor(this.height / 2);
+  var halfRadius = (this.radius / 2);
+  var halfHeight = (this.height / 2);
 
   var dx = [ halfRadius, this.side, this.width, this.side, halfRadius, 0 ];
   var dy = [ 0, 0, halfHeight, this.height, this.height, halfHeight ];
@@ -71,6 +71,18 @@ HexCell.prototype.isClosed = function() {
   return this.sides.reduce(function(prev,curr){ return prev && curr })
 };
 
+HexCell.prototype.convertIntToCardinalLabel = function(i) {
+  var correspondingNeighbour = {
+    0: 'northWest',
+    1: 'north',
+    2: 'northEast',
+    3: 'southEast',
+    4: 'south',
+    5: 'southWest'
+  };
+  return correspondingNeighbour[i];
+};
+
 /**
  Set the side edge state for the hexagon cell to be open or closed
  @param {integer} i 0-based index of side
@@ -79,18 +91,8 @@ HexCell.prototype.isClosed = function() {
 */
 HexCell.prototype.setSide = function(i, state) {
   this.sides[i] = state;
-
-  var correspondingNeighbour = {
-    0: this.neighbours.northWest,
-    1: this.neighbours.north,
-    2: this.neighbours.northEast,
-    3: this.neighbours.southEast,
-    4: this.neighbours.south,
-    5: this.neighbours.southWest
-  };
-
   return {
-    gridCoords: correspondingNeighbour[i],
+    gridCoords: this.neighbours[this.convertIntToCardinalLabel(i)],
     state: state
   };
 };
@@ -105,22 +107,23 @@ HexCell.prototype.getCenter = function() {
 /**
  @return {string} Render the cell to a string for Raphael to work with
  */
-HexCell.prototype.toString = function() {
-  var path = "";
-  var x, y, a;
-  for (var i = 0; i < this.points.length; i++) {
-    x = this.points[i][0];
-    y = this.points[i][1];
-    if(i === 0 || (this.sides[i] === HexCell.OPEN)) {
-      a = "M";
-    } else {
-      a = "L";
-    }
-    path += a + x + "," + y
-  }
-  // And complete the shape to the start point of closed
-  if(this.sides[0] === HexCell.CLOSED) {
-    path += "L" + this.points[0][0] + "," + this.points[0][1]
-  }
-  return path;
-}
+// HexCell.prototype.toString = function() {
+//   var path = "";
+//   var x, y, a, lineExists;
+//   for (var i = 0; i < this.points.length; i++) {
+//     x = this.points[i][0];
+//     y = this.points[i][1];
+//     lineExists = false;
+//     if(i === 0 || (this.sides[i] === HexCell.OPEN) || lineExists) {
+//       a = "M";
+//     } else {
+//       a = "L";
+//     }
+//     path += a + x + "," + y
+//   }
+//   // And complete the shape to the start point of closed
+//   if(this.sides[0] === HexCell.CLOSED) {
+//     path += "L" + this.points[0][0] + "," + this.points[0][1]
+//   }
+//   return path;
+// }

@@ -10,7 +10,7 @@ var SenecaioBusinessCard = function(el, radius){
   $el.empty();
 
   this.paper = Raphael(el, width, height);
-  this.paper.rect(0, 0, width, height).attr({"fill":"#71c6d2","stroke":""});
+  this.paper.rect(0, 0, width, height).attr({"fill":"#fff","stroke":""});
 
   var c = new HexCell(radius, 0, 0);
   var w = Math.floor(width / (c.width + c.side) + 1 );
@@ -23,7 +23,7 @@ var SenecaioBusinessCard = function(el, radius){
   this.bottomMaze = new HexMaze(bottomGrid, grid.getCell(0,0), null);
 };
 
-SenecaioBusinessCard.prototype._getLogo = function() {
+SenecaioBusinessCard.prototype._renderLogo = function() {
     var paper = this.paper;
     var logo = paper.set();
 
@@ -47,22 +47,30 @@ SenecaioBusinessCard.prototype._getLogo = function() {
 };
 
 // Make space in the maze for the logo in the bottom right corner
-SenecaioBusinessCard.prototype._addLogoToMaze = function() {
+SenecaioBusinessCard.prototype._setMaze = function() {
   var grid = this.maze.grid;
-  var bMaze = this.bottomMaze;
+  var bGrid = this.bottomMaze.grid;
 
   // Ensure the exit cell is still open
   this.maze.exit.setSide(HexCell.CARDINALS.northWest, HexCell.OPEN);
   this.maze.exit.setSide(HexCell.CARDINALS.southWest, HexCell.OPEN);
+
+  for(var y=0; y < 2; y++) {
+    for(var x=0; x < bGrid.width; x++) {
+      bGrid.getCell(x,y).setSide(HexCell.CARDINALS.north, HexCell.OPEN);
+      grid.getCell(x,grid.height-1-y).setSide(HexCell.CARDINALS.south, HexCell.OPEN);
+    }
+  }
 };
 
 SenecaioBusinessCard.prototype.render = function() {
   this.maze.generate();
   this.bottomMaze.generate();
 
-  this._addLogoToMaze();
+  this._setMaze();
 
-  var logo = this._getLogo().attr({fill: '#FFFFFF','stroke-width': '0'}).transform("S0.18,0.18,0,0 T152,139");
+  this._renderLogo().attr({fill: '#565253','stroke-width': '0'}).transform("S0.18,0.18,0,0 T152,139");
+
   this.maze.render(this.paper).transform("T15,11");
   this.bottomMaze.render(this.paper).transform("T15,125");
 };

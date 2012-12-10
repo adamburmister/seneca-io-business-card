@@ -52,8 +52,8 @@ HexMaze.prototype.render = function(paper) {
   var mazeSet = paper.set();
   mazeSet.push(
     this.grid.render(paper).attr({
-      "stroke": "#fff",
-      "stroke-width": "1.5",
+      'stroke': '#71c6d2',
+      "stroke-width": "1",
       "stroke-linecap": "round",
     })
   );
@@ -62,8 +62,8 @@ HexMaze.prototype.render = function(paper) {
     var a = this.entrance.getCenter();
     var b = this.exit.getCenter();
     mazeSet.push(
-      paper.circle(a[0], a[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""}),
-      paper.circle(b[0], b[1], r).attr({"fill":"#000","fill-opacity": 0.5, "stroke":""})
+      paper.circle(a[0], a[1], r).attr({"fill":"#565253", "stroke":""}),
+      paper.circle(b[0], b[1], r).attr({"fill":"#565253", "stroke":""})
     )
   }
 
